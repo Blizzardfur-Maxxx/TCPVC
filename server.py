@@ -44,7 +44,7 @@ while True:
 
     try:
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind(('localhost', int(port)))
+        server.bind(('0.0.0.0', int(port)))
         server.listen(5)
         print("Listening for Clients...\n")
         break  # Break out of the loop if port binding is successful
