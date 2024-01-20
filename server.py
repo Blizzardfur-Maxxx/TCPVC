@@ -37,7 +37,7 @@ def broadcast(data, sender_socket):
                     print(f"Error broadcasting to client: {e}")
                     clients.remove(client)
 
-print("Welcome to UDPVC Server\n")
+print("Welcome to TCPVC Server\n")
 
 while True:
     port = input("What will be the server port?:")

@@ -34,7 +34,7 @@ def toggle_mute():
     mute_flag = not mute_flag
     print(f"Microphone {'MUTED' if mute_flag else 'UNMUTED'}")
 
-print("Welcome to UDPVC\n")
+print("Welcome to TCPVC\n")
 
 ip = input("What is the server IP?:")
 port = input("What is the server port?:")
