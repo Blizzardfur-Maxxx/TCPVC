@@ -1,16 +1,20 @@
 import socket
 import threading
 import pyaudio
+from concurrent.futures import ThreadPoolExecutor
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
 
-clients = []
+clients = set()
 clients_lock = threading.Lock()
 
 def handle_client(client_socket):
+    with clients_lock:
+        clients.add(client_socket)
+
     try:
         while True:
             data = client_socket.recv(CHUNK)
@@ -37,28 +41,31 @@ def broadcast(data, sender_socket):
                     print(f"Error broadcasting to client: {e}")
                     clients.remove(client)
 
-print("Welcome to TCPVC Server\n")
+def start_server(port):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('0.0.0.0', port))
+    server.listen(5)
+    print("Listening for Clients...\n")
 
-while True:
-    port = input("What will be the server port?:")
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        try:
+            while True:
+                client, addr = server.accept()
+                print(f"Accepted connection from {addr}")
+                executor.submit(handle_client, client)
+        except KeyboardInterrupt:
+            print("Server shutting down...")
+        finally:
+            server.close()
 
-    try:
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind(('0.0.0.0', int(port)))
-        server.listen(5)
-        print("Listening for Clients...\n")
-        break  # Break out of the loop if port binding is successful
-    except OSError as e:
-        if e.errno == 10048:
-            print(f"Port {port} is already in use. Please choose a different port.")
-        else:
-            print(f"Error binding to port: {e}")
-
-while True:
-    client, addr = server.accept()
-    print(f"Accepted connection from {addr}")
-    with clients_lock:
-        clients.append(client)
-
-    client_handler = threading.Thread(target=handle_client, args=(client,))
-    client_handler.start()
+if __name__ == "__main__":
+    while True:
+        port = input("What will be the server port?: ")
+        try:
+            start_server(int(port))
+            break  # Break out of the loop if the server exits
+        except OSError as e:
+            if e.errno == 10048:
+                print(f"Port {port} is already in use. Please choose a different port.")
+            else:
+                print(f"Error binding to port: {e}")
