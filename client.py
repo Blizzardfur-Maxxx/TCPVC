@@ -12,6 +12,7 @@ p = pyaudio.PyAudio()
 stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, output=True, frames_per_buffer=CHUNK)
 
 mute_flag = False
+mute_lock = threading.Lock()
 
 def receive_data():
     try:
@@ -19,8 +20,9 @@ def receive_data():
             data = client.recv(CHUNK)
             if not data:
                 break
-            if not mute_flag:
-                stream.write(data)
+            with mute_lock:
+                if not mute_flag:
+                    stream.write(data)
     except ConnectionAbortedError:
         print("Connection aborted by the software in your host machine.")
     except Exception as e:
@@ -31,7 +33,8 @@ def receive_data():
 
 def toggle_mute():
     global mute_flag
-    mute_flag = not mute_flag
+    with mute_lock:
+        mute_flag = not mute_flag
     print(f"Microphone {'MUTED' if mute_flag else 'UNMUTED'}")
 
 if __name__ == "__main__":
