@@ -52,7 +52,7 @@ def broadcast(sender_socket):
 
 def start_server(port):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', port))
+    server.bind(('0.0.0.0', int(port)))
     server.listen(5)
     print("Listening for Clients...\n")
 
@@ -71,6 +71,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         port = int(sys.argv[1])
     else:
+        print("Welcome to TCPVC Server!\n")
         port = input("What will be the server port?: ")
 
     try:

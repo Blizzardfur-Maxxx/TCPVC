@@ -43,12 +43,13 @@ if __name__ == "__main__":
         ip = sys.argv[1]
         port = int(sys.argv[2])
     else:
+        print("Welcome to TCPVC!\n")
         ip = input("What is the server IP?: ")
         port = int(input("What is the server port?: "))
 
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((ip, port))
+        client.connect((ip, port))  # Connect to the correct IP and port
         print("Connected!\n")
         print("You can press CTRL + M to toggle mute!\n")
     except ConnectionError as e:
