@@ -2,7 +2,7 @@ import socket
 import threading
 import pyaudio
 from concurrent.futures import ThreadPoolExecutor
-
+import sys
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -68,13 +68,15 @@ def start_server(port):
             server.close()
 
 if __name__ == "__main__":
-    while True:
+    if len(sys.argv) == 2:
+        port = int(sys.argv[1])
+    else:
         port = input("What will be the server port?: ")
-        try:
-            start_server(int(port))
-            break  # Break out of the loop if the server exits
-        except OSError as e:
-            if e.errno == 10048:
-                print(f"Port {port} is already in use. Please choose a different port.")
-            else:
-                print(f"Error binding to port: {e}")
+
+    try:
+        start_server(port)
+    except OSError as e:
+        if e.errno == 10048:
+            print(f"Port {port} is already in use. Please choose a different port.")
+        else:
+            print(f"Error binding to port: {e}")

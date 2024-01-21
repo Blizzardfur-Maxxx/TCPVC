@@ -2,6 +2,7 @@ import socket
 import pyaudio
 import threading
 import keyboard
+import sys
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -38,10 +39,12 @@ def toggle_mute():
     print(f"Microphone {'MUTED' if mute_flag else 'UNMUTED'}")
 
 if __name__ == "__main__":
-    print("Welcome to TCPVC\n")
-
-    ip = input("What is the server IP?: ")
-    port = int(input("What is the server port?: "))
+    if len(sys.argv) == 3:
+        ip = sys.argv[1]
+        port = int(sys.argv[2])
+    else:
+        ip = input("What is the server IP?: ")
+        port = int(input("What is the server port?: "))
 
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
